@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chemcore</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --bg-card: #161b22;
+      --bg-field: #1c2333;
+      --bg-hero: #1a2030;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.16);
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #484f58;
+      --accent: #58a6ff;
+      --accent-dim: rgba(88,166,255,0.12);
+      --btn-bg: #191e1a;
+      --btn-hover: #404040;
+      --quick-bg: #161b22;
+      --quick-hover: #1c2333;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Lato', sans-serif;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+
+    .wrap {
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      margin-bottom: 36px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .logo-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 38px;
+      color: var(--text);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .logo-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(88,166,255,0.25);
+      border-radius: 4px;
+      padding: 2px 8px;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+
+    .header-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── Search ─── */
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .inp {
+      flex: 1;
+      padding: 11px 16px;
+      font-family: 'Lato', sans-serif;
+      font-size: 15px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .inp::placeholder {
+      color: var(--text-dim);
+    }
+
+    .inp:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(88,166,255,0.15);
+    }
+
+    .btn {
+      padding: 11px 22px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: var(--btn-bg);
+      color: #fff;
+      border: 1px solid rgba(240,246,252,0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background: var(--btn-hover); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+    /* ─── Quick picks ─── */
+    .quick {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .qbtn {
+      padding: 5px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      background: var(--quick-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .qbtn:hover {
+      background: var(--quick-hover);
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    /* ─── Status ─── */
+    .status {
+      font-size: 13px;
+      color: var(--text-muted);
+      min-height: 20px;
+      margin-bottom: 12px;
+    }
+
+    .status.err {
+      color: #f85149;
+    }
+
+    /* ─── Card ─── */
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg-card);
+      overflow: hidden;
+      display: none;
+      animation: fadeUp 0.25s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Hero ─── */
+    .hero {
+      position: relative;
+      height: 170px;
+      background: var(--bg-hero);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.18;
+      filter: saturate(0.6);
+    }
+
+    .hero-number {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      z-index: 1;
+    }
+
+    .big-symbol {
+      font-family: 'DM Serif Display', serif;
+      font-size: 80px;
+      line-height: 1;
+      color: var(--text);
+      position: relative;
+      z-index: 1;
+      letter-spacing: -2px;
+    }
+
+    .hero-meta {
+      position: relative;
+      z-index: 1;
+      margin-left: 16px;
+      padding-bottom: 6px;
+    }
+
+    .hero-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .hero-category {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 10px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(88,166,255,0.2);
+      border-radius: 20px;
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Body ─── */
+    .body {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .field {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field:nth-child(odd) {
+      padding-right: 1.5rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .field:nth-child(even) {
+      padding-left: 1.5rem;
+    }
+
+    .field:nth-last-child(-n+2) {
+      border-bottom: none;
+    }
+
+    .field-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .field-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .field-value.text {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="header">
+      <div class="logo">
+        <img src="logo.png" width="40px">
+        <span class="logo-title">Chemcore</span>
+      </div>
+      <div class="header-sub">Exploratorul pentru tabelul periodic</div>
+    </div>
+
+    <div class="search-row">
+      <input
+        class="inp"
+        id="inp"
+        placeholder="Numele sau simbolul elementului — ex: Aur, Au"
+        onkeydown="if(event.key==='Enter') cauta()"
+      >
+      <button class="btn" id="btn" onclick="cauta()">Caută</button>
+    </div>
+
+    <div class="quick">
+      <button class="qbtn" onclick="cautaRapid('Gold')">Au — Aur</button>
+      <button class="qbtn" onclick="cautaRapid('Carbon')">C — Carbon</button>
+      <button class="qbtn" onclick="cautaRapid('Oxygen')">O — Oxigen</button>
+      <button class="qbtn" onclick="cautaRapid('Iron')">Fe — Fier</button>
+      <button class="qbtn" onclick="cautaRapid('Uranium')">U — Uraniu</button>
+      <button class="qbtn" onclick="cautaRapid('Helium')">He — Heliu</button>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <div class="card" id="card">
+      <div class="hero">
+        <img id="img" class="hero-img" src="" alt="">
+        <div class="hero-number" id="num"></div>
+        <div class="big-symbol" id="sym"></div>
+        <div class="hero-meta">
+          <div class="hero-name" id="ename"></div>
+          <div class="hero-category" id="cat"></div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="grid">
+          <div class="field">
+            <div class="field-label">Masă atomică</div>
+            <div class="field-value" id="mass"></div>
+          </div>
+          <div class="field">
+            <div class="field-label">Fază</div>
+            <div class="field-value" id="phase"></div>
+          </div>
+          <div class="field">
+            <div class="field-label">Descoperit de</div>
+            <div class="field-value text" id="disc"></div>
+          </div>
+          <div class="field">
+            <div class="field-label">Număr atomic</div>
+            <div class="field-value" id="anum"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let elementeCache = null;
+
+    const faze = {
+      'Gas': 'Gaz',
+      'Solid': 'Solid',
+      'Liquid': 'Lichid',
+      'Unknown': 'Necunoscut'
+    };
+
+    async function incarcaElemente() {
+      if (elementeCache) return elementeCache;
+      const r = await fetch('https://api.periodictableofelements.org/elements');
+      elementeCache = await r.json();
+      return elementeCache;
+    }
+
+    function cautaRapid(nume) {
+      document.getElementById('inp').value = nume;
+      cauta();
+    }
+
+    async function cauta() {
+      const raw = document.getElementById('inp').value.trim();
+      if (!raw) return;
+
+      const q = raw.toLowerCase();
+      const status = document.getElementById('status');
+      const card = document.getElementById('card');
+      const btn = document.getElementById('btn');
+
+      status.className = 'status';
+      status.textContent = 'Se caută…';
+      card.style.display = 'none';
+      btn.disabled = true;
+
+      try {
+        const elemente = await incarcaElemente();
+        const el = elemente.find(e =>
+          e.name.toLowerCase() === q || e.symbol.toLowerCase() === q
+        );
+
+        if (!el) {
+          status.className = 'status err';
+          status.textContent = 'Elementul nu a fost găsit. Încearcă un nume precum „Fier" sau un simbol precum „Fe".';
+          btn.disabled = false;
+          return;
+        }
+
+        status.className = 'status';
+        status.textContent = '';
+
+        let imgSrc = '';
+        try {
+          const wr = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(el.name)}`);
+          const wd = await wr.json();
+          if (wd.thumbnail) imgSrc = wd.thumbnail.source;
+        } catch (_) {}
+
+        const imgEl = document.getElementById('img');
+        if (imgSrc) {
+          imgEl.src = imgSrc;
+          imgEl.style.display = 'block';
+        } else {
+          imgEl.style.display = 'none';
+        }
+
+        document.getElementById('sym').textContent = el.symbol;
+        document.getElementById('ename').textContent = el.name;
+        document.getElementById('num').textContent = 'Nr. ' + el.atomic_number;
+        document.getElementById('anum').textContent = el.atomic_number;
+        document.getElementById('mass').textContent = el.atomic_mass ? el.atomic_mass + ' u' : '—';
+        document.getElementById('phase').textContent = faze[el.phase] || el.phase || 'Necunoscut';
+        document.getElementById('disc').textContent = el.discovered_by || 'Necunoscut';
+        document.getElementById('cat').textContent = el.category || '—';
+
+        card.style.display = 'block';
+
+      } catch (err) {
+        status.className = 'status err';
+        status.textContent = 'Eroare la încărcarea datelor. Încearcă din nou.';
+        console.error(err);
+      }
+
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
